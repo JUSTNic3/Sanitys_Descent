@@ -19,7 +19,7 @@ public class FlickeringLights : MonoBehaviour
     private void Awake()
     {
         timer = Random.Range(minTime, maxTime);
-        lightModelRenderer.material = lightOffMaterial;
+        lightModelRenderer.material = lightOnMaterial;
     }
 
     private void Update()
