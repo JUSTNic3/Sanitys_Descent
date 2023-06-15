@@ -5,6 +5,7 @@ using UnityEngine;
 public class PhoneTrigger : MonoBehaviour
 {
     public PhoneController phoneController;
+    public FlickeringLights flickeringLights; // Reference to the FlickeringLights script
     public GameObject toEnable;
     private bool hasTriggered = false;
 
@@ -27,6 +28,7 @@ public class PhoneTrigger : MonoBehaviour
         {
             phoneController.PlayRingAudio();
             hasTriggered = true;
+            flickeringLights.StartFlickering(); // Start the light flickering
         }
     }
 
