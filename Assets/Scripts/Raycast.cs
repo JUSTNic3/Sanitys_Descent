@@ -10,17 +10,18 @@ public class Raycast : MonoBehaviour
     [SerializeField] private string excludeLayerName = null;
     private DoorController raycastedObj1;
     private PhoneController raycastedObj2;
+    private KeyController raycastedObj3;
     [SerializeField] private KeyCode interact = KeyCode.Mouse0;
     [SerializeField] private Image crosshair = null;
     private bool isCrosshairActive;
     private bool doOnceDoor;
     private bool doOncePhone;
-    private bool canInteractWithPhone; // Added variable to track phone interaction
+    private bool canInteractWithPhone;
     private const string interactableTag = "InteractiveObject";
 
     private void Start()
     {
-        canInteractWithPhone = true; // Enable initial interaction with the phone
+        canInteractWithPhone = true;
     }
 
     private void Update()
@@ -46,17 +47,19 @@ public class Raycast : MonoBehaviour
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Phone"))
                 {
-                    if (!doOncePhone && canInteractWithPhone) // Added check for interaction with the phone
+                    if (!doOncePhone && canInteractWithPhone)
                     {
                         raycastedObj2 = hit.collider.gameObject.GetComponent<PhoneController>();
                         CrosshairChange(true);
                         isCrosshairActive = true;
                         doOncePhone = true;
                         doOnceDoor = false;
-
-                        // Enable ability to skip call audio
                         raycastedObj2.canSkipCall = true;
                     }
+                }
+                else if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Key"))
+                {
+                    raycastedObj3 = hit.collider.gameObject.GetComponent<KeyController>();
                 }
 
                 if (Input.GetKeyDown(interact))
@@ -69,17 +72,19 @@ public class Raycast : MonoBehaviour
                     {
                         raycastedObj2.PlayCallAudio();
                     }
+                    else if(raycastedObj3 != null && !raycastedObj3.isKeyCollected)
+                    {
+                        raycastedObj3.CollectKey();
+                        // raycastedObj3.SetActive(false); // Remove this line
+                    }
                 }
 
-                // Check if the call audio can be skipped and the "E" key is pressed
                 if (doOncePhone && raycastedObj2.canSkipCall && Input.GetKeyDown(KeyCode.E))
                 {
                     raycastedObj2.callSource.Stop();
                     raycastedObj2.isRinging = false;
                     raycastedObj2.hasPlayedCall = false;
                     raycastedObj2.canSkipCall = false;
-
-                    // Disable interaction with the phone
                     canInteractWithPhone = false;
                     doOncePhone = false;
                 }
